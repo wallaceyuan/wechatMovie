@@ -5,6 +5,13 @@
 
 var Koa = require('koa');
 var sha1 = require('sha1');
+var EventEmitter = require('events');
+var util = require('util');
+function Girl(name){
+    this.name = name;
+    EventEmitter.call(this);
+}
+util.inherits(Girl,EventEmitter);
 
 var config = {
     wechat:{
