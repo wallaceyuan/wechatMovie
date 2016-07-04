@@ -10,8 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.4.1",
     "koa": "^1.2.0",
     "localtunnel": "^1.8.1",
+    "path": "^0.12.7",
+    "raw-body": "^2.1.7",
+    "request": "^2.72.0",
     "sha1": "^1.1.1",
     "util": "^0.10.3"
   }
