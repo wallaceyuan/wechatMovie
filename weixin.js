@@ -4,16 +4,19 @@
 exports.reply = function* (next){
 
     var message = this.weixin
-    if(message.msgType === 'event'){
+    if(message.MsgType === 'event'){
         if(message.Event === 'subscribe'){
             if(message.EventKey){
-                console.log('扫二维码进来：'+message.EventKey+ ' ' + message.ticket);
+                console.log('鎵簩缁寸爜杩涙潵'+message.EventKey+ ' ' + message.ticket);
             }
-            this.body ='哈哈，你订阅了一个微信号\r\n' +'消息ID:' +message.MsgId
+            this.body ='鍝堝搱锛屼綘璁㈤槄浜嗕竴涓井淇″彿\r\n' +'娑堟伅ID:' +message.MsgId
         }else if(message.Event === 'unsubscribe'){
-            console.log('无情取关');
+            console.log('鏃犳儏鍙栧叧');
+            this.body = ''
         }
+    }else{
+
     }
 
-
+    yield next
 }

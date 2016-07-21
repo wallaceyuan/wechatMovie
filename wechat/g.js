@@ -15,7 +15,7 @@ var api = {
     accessToken:prefix+'token?grant_type=client_credential'
 }
 
-module.exports = function(opts,weixin){
+module.exports = function(opts,handler){
     var wechat = new Wechat(opts);
 
     return function *(next){
@@ -59,9 +59,9 @@ module.exports = function(opts,weixin){
                 yield handler.call(this,next);
                 wechat.replay.call(this);
 
-                console.log(data.toString());
-                console.log(content);
-                console.log(message);
+                console.log('g data to string',data.toString());
+                console.log('g content',content);
+                console.log('g message',message);
 
             }
         }
