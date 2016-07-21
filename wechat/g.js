@@ -15,7 +15,7 @@ var api = {
     accessToken:prefix+'token?grant_type=client_credential'
 }
 
-module.exports = function(opts){
+module.exports = function(opts,weixin){
     var wechat = new Wechat(opts);
 
     return function *(next){
@@ -50,26 +50,14 @@ module.exports = function(opts){
                     limit:'1mb',
                     encoding:this.charset
                 });
-                var content = yield util.parseXMLAsync(data);
+
+                var content = yield util.parseXMLAsync(data);//xml to js
 
                 var message = util.formatMessage(content.xml);
 
-                if(message.MsgType == 'event'){
-                    if(message.Event == 'subscribe'){
-                        var now = (new Date().getTime());
-                        that.status = 200;
-                        that.type = 'application/xml';
-                        that.body = '<xml>'+
-                        '<ToUserName><![CDATA['+message.FromUserName+']]></ToUserName>'+
-                        '<FromUserName><![CDATA['+message.ToUserName+']]></FromUserName>'+
-                        '<CreateTime>'+now+'</CreateTime>'+
-                        '<MsgType><![CDATA[text]]></MsgType>'+
-                        '<Content><![CDATA[Hi,i am wallace_yuanyuan]]></Content>'+
-                        '</xml>';
-
-                        return
-                    }
-                }
+                this.weixin = message;
+                yield handler.call(this,next);
+                wechat.replay.call(this);
 
                 console.log(data.toString());
                 console.log(content);
