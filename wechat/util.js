@@ -53,6 +53,7 @@ function formatMessage(result){
 exports.formatMessage = formatMessage
 
 exports.tpl = function(content,message){
+    console.log('tpl','content',content);
     var info = {}
     var type = 'text'
     var fromUsername = message.FromUserName

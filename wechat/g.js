@@ -51,6 +51,8 @@ module.exports = function(opts,handler){
                     encoding:this.charset
                 });
 
+                //console.log('buffer-xml',data.toString());
+
                 var content = yield util.parseXMLAsync(data);//xml to js
 
                 var message = util.formatMessage(content.xml);
@@ -59,9 +61,8 @@ module.exports = function(opts,handler){
                 yield handler.call(this,next);
                 wechat.replay.call(this);
 
-                console.log('g data to string',data.toString());
-                console.log('g content',content);
-                console.log('g message',message);
+                //console.log('g content',content);
+                //console.log('g message',message);
 
             }
         }
