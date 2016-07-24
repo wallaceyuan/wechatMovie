@@ -1,6 +1,11 @@
 /**
  * Created by yuan on 2016/7/21.
  */
+
+var config = require('./config');
+var Wechat = require('./wechat/wechat');
+var wechatApi = new Wechat(config.wechat);
+
 exports.reply = function* (next){
 
     var message = this.weixin
@@ -44,6 +49,52 @@ exports.reply = function* (next){
                 picUrl:'http://static.statickksmg.com/image/2016/07/19/1de39cf02f732fad41948998f681f40a.jpg',
                 url:'http://www.kankanews.com/a/2016-07-19/0037610359.shtml'
             }]
+        }else if(content == '5'){
+            var data = yield wechatApi.uploadMaterial('image', __dirname + '/vendor/2.jpg');
+            reply = {
+                "type":'image',
+                "mediaId":data.media_id
+            }
+        }else if(content == '6'){
+            var data = yield wechatApi.uploadMaterial('video', __dirname + '/vendor/2.mp4');
+            reply = {
+                "type":'video',
+                "mediaId":data.media_id,
+                "title":'普京粉丝团',
+                "description":"开会的时候…梅德韦杰夫的iPad音乐响了…这就有点尴尬了……"
+            }
+        }else if(content == '7'){
+            var data = yield wechatApi.uploadMaterial('image', __dirname + '/vendor/2.jpg');
+            reply = {
+                "type":'music',
+                "title":'One For Da Money',
+                "description":"听歌放松一下",
+                "musicUrl":"http://45.124.125.100/m10.music.126.net/20160724173857/a9007e16a5e12aa5fd08659dd925239a/ymusic/4c3a/5d58/c137/08eccadceb8626dcbf43b2afd4bcb41f.mp3",
+                "thumbMediaId":data.media_id
+            }
+        }else if(content == '8'){
+            var data = yield wechatApi.uploadMaterial('image', __dirname + '/vendor/2.jpg',{"type":'image'});
+            reply = {
+                "type":'image',
+                "mediaId":data.media_id
+            }
+        }else if(content == '9'){
+            var data = yield wechatApi.uploadMaterial('video', __dirname + '/vendor/2.mp4',{"type":'video', "description":'{"title":"普京粉丝团", "introduction":"开会的时候…梅德韦杰夫的iPad音乐响了…这就有点尴尬了……"}'});
+            reply = {
+                "type":'video',
+                "mediaId":data.media_id,
+                "title":'普京粉丝团',
+                "description":"开会的时候…梅德韦杰夫的iPad音乐响了…这就有点尴尬了……"
+            }
+        }else if(content == '10'){
+            var data = yield wechatApi.uploadMaterial('image', __dirname + '/vendor/2.jpg',{"type":'music'});
+            reply = {
+                "type":'music',
+                "title":'One For Da Money',
+                "description":"听歌放松一下",
+                "musicUrl":"http://45.124.125.100/m10.music.126.net/20160724173857/a9007e16a5e12aa5fd08659dd925239a/ymusic/4c3a/5d58/c137/08eccadceb8626dcbf43b2afd4bcb41f.mp3",
+                "thumbMediaId":data.media_id
+            }
         }
         this.body = reply;
     }
