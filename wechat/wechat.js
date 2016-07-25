@@ -36,6 +36,24 @@ var api = {
         count:prefix+'material/get_materialcount?',
         //https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=ACCESS_TOKEN
         batch:prefix+'material/batchget_material?'
+    },
+    tags:{
+        //https://api.weixin.qq.com/cgi-bin/tags/create?access_token=ACCESS_TOKEN
+        create:prefix+'tags/create?',
+        //https://api.weixin.qq.com/cgi-bin/tags/get?access_token=ACCESS_TOKEN
+        get:prefix+'tags/get?',
+        //https://api.weixin.qq.com/cgi-bin/tags/update?access_token=ACCESS_TOKEN
+        update:prefix+'tags/update?',
+        //https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=ACCESS_TOKEN
+        del:prefix+'tags/delete?',
+        //https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=ACCESS_TOKEN
+        userget:prefix+'user/tag/get?',
+        //https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=ACCESS_TOKEN
+        batchtag:prefix+'tags/members/batchtagging?',
+        //https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=ACCESS_TOKEN
+        batchuntag:prefix+'tags/members/batchuntagging?',
+        //https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=ACCESS_TOKEN
+        getlist:prefix+'tags/getidlist?'
     }
 }
 
@@ -80,7 +98,6 @@ Wechat.prototype.fecthAccessToken = function(opts){
         });
 }
 
-//��Wechatԭ�����ϼӷ���
 Wechat.prototype.isValidAccessToken = function(data){
     if(!data || !data.access_token || !data.expires_in){
         return false;
@@ -196,7 +213,7 @@ Wechat.prototype.fetchMaterial = function(media_id,type,permanent){
                 var options = {
                     url:url,
                     method:"POST",
-                    json:true,
+                    json:true
                 }
                 if(permanent){
                     form.media_id = media_id
@@ -260,7 +277,9 @@ Wechat.prototype.deleteMaterial = function(media_id,type){
                         throw new Error('Upload material fails');
                     }
                 })
-                resolve(url)
+                .catch(function(err){
+                    reject(err);
+                });
             })
     })
 }
@@ -298,7 +317,9 @@ Wechat.prototype.updateMaterial = function(media_id,news){
                         throw new Error('Upload material fails');
                     }
                 })
-                resolve(url)
+                .catch(function(err){
+                    reject(err);
+                });
             })
     })
 }
@@ -306,7 +327,6 @@ Wechat.prototype.updateMaterial = function(media_id,news){
 Wechat.prototype.countMaterial = function(){
     var that = this;
     var countUrl = api.permanent.count
-
 
     return new Promise(function(resolve,reject){
         that
@@ -327,7 +347,9 @@ Wechat.prototype.countMaterial = function(){
                         throw new Error('Upload material fails');
                     }
                 })
-                resolve(url)
+                .catch(function(err){
+                    reject(err);
+                });
             })
     })
 }
@@ -366,5 +388,230 @@ Wechat.prototype.batchMaterial = function(options){
             })
     })
 }
+
+Wechat.prototype.createTag = function(name){
+    var that = this;
+    var createlUrl = api.tags.create
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = createlUrl + '&access_token=' + data.access_token
+                var form = {
+                    "tag" : {
+                        "name" : name//标签名
+                    }
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('createTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('createTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                });
+            })
+    })
+}
+
+Wechat.prototype.getTag = function(){
+    var that = this;
+    var getlUrl = api.tags.get
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = getlUrl + '&access_token=' + data.access_token
+                request({"url":url,"json":true}).then(function(response){
+                    var _data = response.body;
+                    console.log('getTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('getTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                });
+            })
+    })
+}
+
+Wechat.prototype.updateTag = function(id,name){
+    var that = this;
+    var updateUrl = api.tags.update
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = updateUrl + '&access_token=' + data.access_token
+                var form = {
+                    "tag" : {
+                        "id" : id,
+                        "name" : name
+                    }
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('updateTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('updateTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                });
+            })
+    })
+}
+
+Wechat.prototype.delTag = function(id){
+    var that = this;
+    var delUrl = api.tags.del
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = delUrl + '&access_token=' + data.access_token
+                var form = {
+                    "tag" : {
+                        "id" : id
+                    }
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('delTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('delTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                });
+            })
+    })
+}
+
+Wechat.prototype.usergetTag = function(id,openid){
+    var that = this;
+    var usergetUrl = api.tags.userget
+    var openid = openid || ""
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = usergetUrl + '&access_token=' + data.access_token
+                var form = {
+                    "tagid" : id,
+                    "next_openid":openid
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('usergetTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('usergetTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                });
+            })
+    })
+}
+
+Wechat.prototype.batchtagTag = function(id,openids){
+    var that = this;
+    var batchtagUrl = api.tags.batchtag
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = batchtagUrl + '&access_token=' + data.access_token
+                var form = {
+                    "openid_list" : openids,
+                    "tagid" : id
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('batchtagTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('batchtagTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                })
+            })
+    })
+}
+
+Wechat.prototype.batchuntagTag = function(id,openids){
+    var that = this;
+    var batchuntagUrl = api.tags.batchuntag
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = batchuntagUrl + '&access_token=' + data.access_token
+                var form = {
+                    "openid_list" : openids,
+                    "tagid" : id
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('batchuntagTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('batchuntagTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                })
+            })
+    })
+}
+
+Wechat.prototype.getlistTag = function(openid){
+    var that = this;
+    var getlistUrl = api.tags.getlist
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = getlistUrl + '&access_token=' + data.access_token
+                var form = {
+                    "openid" : openid
+                }
+                request({"method":"POST","url":url,"json":true,body:form}).then(function(response){
+                    var _data = response.body;
+                    console.log('getlistTag',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('getlistTag fails');
+                    }
+                })
+                .catch(function(err){
+                    reject(err);
+                })
+            })
+    })
+}
+
 
 module.exports = Wechat;

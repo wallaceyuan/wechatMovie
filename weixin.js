@@ -152,6 +152,21 @@ exports.reply = function* (next){
             ]
             reply = 12;
             console.log(JSON.stringify(result));
+        }else if(content == 13){
+/*            var tag = yield wechatApi.createTag('weixin2');
+            var res1 = yield wechatApi.getTag();
+            var res2 = yield wechatApi.updateTag(100,'weixin100');
+            var res1 = yield wechatApi.getTag();
+            var tag = yield wechatApi.createTag('weixintest');
+            var res3 = yield wechatApi.delTag(101);
+            var res1 = yield wechatApi.getTag();
+            var re5 = yield wechatApi.batchtagTag(100,message.FromUserName);*/
+            //var re6 = yield wechatApi.batchtagTag(100,["oXGVcwNPgkIWx1Uxno49JXjDKzmI","oXGVcwDluAg83pBPe1g-99lSxcCE"])
+            //var re4 = yield wechatApi.usergetTag(100);
+            //var re7 = yield wechatApi.batchuntagTag(100,"oXGVcwNPgkIWx1Uxno49JXjDKzmI")
+            //var re4 = yield wechatApi.usergetTag(100);
+            var re8 = yield wechatApi.getlistTag(message.FromUserName)
+            reply = 'Tag Done';
         }
         this.body = reply;
     }
