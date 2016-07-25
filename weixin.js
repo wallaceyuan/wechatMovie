@@ -95,9 +95,65 @@ exports.reply = function* (next){
                 "musicUrl":"http://45.124.125.100/m10.music.126.net/20160724173857/a9007e16a5e12aa5fd08659dd925239a/ymusic/4c3a/5d58/c137/08eccadceb8626dcbf43b2afd4bcb41f.mp3",
                 "thumbMediaId":data.media_id
             }
+        }else if(content == '11'){
+            var picData = yield wechatApi.uploadMaterial('image', __dirname + '/vendor/2.jpg',{});//上传永久图片素材
+            console.log('picData',picData);
+            var media = {
+                "articles":[{//若新增的是多图文素材，则此处应还有几段articles结构
+                    "title": '图片',
+                    "thumb_media_id": picData.media_id,
+                    "author": 'Wallace',
+                    "digest": '没有摘要',
+                    "show_cover_pic": 1,
+                    "content": '没有内容',
+                    "content_source_url": 'http://github.com'
+                }]
+            }
+            var data = yield wechatApi.uploadMaterial('news',media,{})//上传永久图文素材
+            console.log('data.media_id',data);
+            data = yield wechatApi.fetchMaterial(data.media_id,'news',{})//获取永久图文素材
+
+            var items = data.news_item
+            var news = []
+
+            items.forEach(function(item){
+                news.push({
+                    title:item.title,
+                    description:item.description,
+                    picUrl:item.picUrl,
+                    url:item.url
+                });
+            });
+            reply = news
+        }else if(content == 12){
+            var counts = yield wechatApi.countMaterial();//上传永久图片素材
+            console.log(JSON.stringify(counts));
+            var result = yield [
+                wechatApi.batchMaterial({
+                    "type":'image',
+                    "offset":0,
+                    "count":10
+                }),
+                wechatApi.batchMaterial({
+                    "type":'news',
+                    "offset":0,
+                    "count":10
+                }),
+                wechatApi.batchMaterial({
+                    "type":'video',
+                    "offset":0,
+                    "count":10
+                }),
+                wechatApi.batchMaterial({
+                    "type":'voice',
+                    "offset":0,
+                    "count":10
+                })
+            ]
+            reply = 12;
+            console.log(JSON.stringify(result));
         }
         this.body = reply;
     }
-
     yield next
 }

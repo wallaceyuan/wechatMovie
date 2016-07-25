@@ -20,18 +20,22 @@ var api = {
         fetch:prefix+'media/get?'
     },
     permanent:{
-        //https://api.weixin.qq.com/cgi-bin/material/add_news?access_token=ACCESS_TOKEN
-        //https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
         //https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN&type=TYPE
         upload:prefix+'material/add_material?',
+        //https://api.weixin.qq.com/cgi-bin/material/add_news?access_token=ACCESS_TOKEN
         uploadNews:prefix+'material/add_news?',
+        //https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
         uploadNewsPic:prefix+'media/uploadimg?',
         //https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=ACCESS_TOKEN
         fetch:prefix+'material/get_material?',
         //https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=ACCESS_TOKEN
-        del:prefix+'del_material?',
+        del:prefix+'material/del_material?',
         //https://api.weixin.qq.com/cgi-bin/material/update_news?access_token=ACCESS_TOKEN
-        update:prefix+'update_news?'
+        update:prefix+'material/update_news?',
+        //https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=ACCESS_TOKEN
+        count:prefix+'material/get_materialcount?',
+        //https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=ACCESS_TOKEN
+        batch:prefix+'material/batchget_material?'
     }
 }
 
@@ -68,7 +72,7 @@ Wechat.prototype.fecthAccessToken = function(opts){
             }
         })
         .then(function(data){
-            console.log('getAccessToken',data);
+            //console.log('getAccessToken',data);
             that.access_token = data.access_token;
             that.expires_in = data.expires_in;
             that.saveAccessToken(data);
@@ -109,7 +113,7 @@ Wechat.prototype.updateAccessToken = function(opts){
 }
 
 Wechat.prototype.replay = function(){
-    var content = this.body
+    var content = this.body//this.body = reply
     var message = this.weixin
 
     console.log('message',message);
@@ -144,12 +148,11 @@ Wechat.prototype.uploadMaterial = function(type,material,permanent){
         that
             .fecthAccessToken()
             .then(function(data){
-                var url = uploadUrl + '&access_token=' + data.access_token
+                var url = uploadUrl + 'access_token=' + data.access_token
                 if(!permanent){
                     url += '&type=' + type
-                }else{
-                    form.access_token = data.access_token
                 }
+
                 var option = {
                     "method":"POST",
                     "url":url,
@@ -163,7 +166,7 @@ Wechat.prototype.uploadMaterial = function(type,material,permanent){
                 }
                 request(option).then(function(response){
                     var _data = response.body;
-                    console.log(response.body);
+                    console.log('uploadMaterial',response.body);
                     if(_data){
                         resolve(_data);
                     }else{
@@ -171,8 +174,8 @@ Wechat.prototype.uploadMaterial = function(type,material,permanent){
                     }
                 })
                 .catch(function(err){
-                        reject(err);
-                    });
+                    reject(err);
+                });
             })
     })
 }
@@ -180,7 +183,6 @@ Wechat.prototype.uploadMaterial = function(type,material,permanent){
 Wechat.prototype.fetchMaterial = function(media_id,type,permanent){
     var that = this;
     var form = {};
-
     var fetchUrl = api.temporary.fetch
     if(permanent){
         fetchUrl = api.permanent.fetch
@@ -190,11 +192,40 @@ Wechat.prototype.fetchMaterial = function(media_id,type,permanent){
         that
             .fecthAccessToken()
             .then(function(data){
-                var url = fetchUrl + '&access_token=' + data.access_token+'&media_id=' + media_id
-                if(!permanent && type == 'video'){
-                    url = url.replace('https://','http://');
+                var url = fetchUrl + '&access_token=' + data.access_token
+                var options = {
+                    url:url,
+                    method:"POST",
+                    json:true,
                 }
-                resolve(url)
+                if(permanent){
+                    form.media_id = media_id
+                    form.access_token = data.access_token
+                    options.body = form
+                }else{
+                    if(type=='video'){
+                        url.replace('https://','http://')
+                    }
+                    url +='&media_id=' + media_id
+                }
+                //resolve(url)
+
+                if( type === 'news' || type === 'video'){
+                    request(options).then(function(response){
+                        var _data = response.body;
+                        console.log('fetchMaterial',response.body);
+                        if(_data){
+                            resolve(_data);
+                        }else{
+                            throw new Error('Upload material fails');
+                        }
+                    })
+                    .catch(function(err){
+                        reject(err);
+                    });
+                }else{
+                    resolve(url)
+                }
             })
     })
 }
@@ -222,7 +253,7 @@ Wechat.prototype.deleteMaterial = function(media_id,type){
                 var url = delUrl + '&access_token=' + data.access_token
                 request(option).then(function(response){
                     var _data = response.body;
-                    console.log(response.body);
+                    console.log('deleteMaterial',response.body);
                     if(_data){
                         resolve(_data);
                     }else{
@@ -233,7 +264,6 @@ Wechat.prototype.deleteMaterial = function(media_id,type){
             })
     })
 }
-
 
 Wechat.prototype.updateMaterial = function(media_id,news){
     var that = this;
@@ -261,7 +291,71 @@ Wechat.prototype.updateMaterial = function(media_id,news){
                 var url = updatelUrl + '&access_token=' + data.access_token
                 request(option).then(function(response){
                     var _data = response.body;
-                    console.log(response.body);
+                    console.log('updateMaterial',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('Upload material fails');
+                    }
+                })
+                resolve(url)
+            })
+    })
+}
+
+Wechat.prototype.countMaterial = function(){
+    var that = this;
+    var countUrl = api.permanent.count
+
+
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = countUrl + 'access_token=' + data.access_token
+                var option = {
+                    "method":"GET",
+                    "url":url,
+                    "json":true
+                }
+                request(option).then(function(response){
+                    var _data = response.body;
+                    console.log('countMaterial',response.body);
+                    if(_data){
+                        resolve(_data);
+                    }else{
+                        throw new Error('Upload material fails');
+                    }
+                })
+                resolve(url)
+            })
+    })
+}
+
+Wechat.prototype.batchMaterial = function(options){
+    var that = this;
+    var form = {};
+
+    var batchlUrl = api.permanent.batch
+    options.type = options.type || 'image'
+    options.offset = options.offset || 0
+    options.count = options.count || 1
+    _.extend(form,options)
+
+    return new Promise(function(resolve,reject){
+        that
+            .fecthAccessToken()
+            .then(function(data){
+                var url = batchlUrl + '&access_token=' + data.access_token
+                var option = {
+                    "method":"POST",
+                    "url":url,
+                    "json":true,
+                    body:form
+                }
+                request(option).then(function(response){
+                    var _data = response.body;
+                    console.log('batchMaterial',response.body);
                     if(_data){
                         resolve(_data);
                     }else{

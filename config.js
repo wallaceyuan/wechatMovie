@@ -9,9 +9,9 @@ var wechat_file = path.join(__dirname ,'./config/wechat.txt');
 
 var config = {
     wechat:{//
-        appID : 'wxe539b74f1500b34f',//wx0527f87ddccbfe13
-        appSecret:'247fbdaee6f89a225345f7a56b5398b4',//ba2de824eed86e2000980b68e383d9c9
-        token:'Wallace686cEtzB7o7fk',
+        appID : 'wxe539b74f1500b34f',//wx0527f87ddccbfe13//wxe539b74f1500b34f
+        appSecret:'247fbdaee6f89a225345f7a56b5398b4',//ba2de824eed86e2000980b68e383d9c9//247fbdaee6f89a225345f7a56b5398b4
+        token:'Wallace746cEtzB7o7fk',
         getAccessToken:function(){
             return util.readFileAsync(wechat_file,'utf-8')
         },
