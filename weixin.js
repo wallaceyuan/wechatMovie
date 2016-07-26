@@ -28,6 +28,8 @@ exports.reply = function* (next){
         }else if(message.Event === 'VIEW'){
             this.body = '您点急了菜单中的链接：'+message.EventKey;
         }
+    }else if(message.MsgType === 'location'){
+        this.body = '您上报的位置是：'+message.Label+' '+message.Location_X+' '+message.Location_Y;
     }else if(message.MsgType === 'text'){
         var content = message.Content;
         var reply = '您说的:'+message.Content+ ' 太复杂了';
@@ -107,6 +109,22 @@ exports.reply = function* (next){
                     "show_cover_pic": 1,
                     "content": '没有内容',
                     "content_source_url": 'http://github.com'
+                },{
+                    "title": '图片',
+                    "thumb_media_id": picData.media_id,
+                    "author": 'Wallace',
+                    "digest": '没有摘要',
+                    "show_cover_pic": 1,
+                    "content": '没有内容',
+                    "content_source_url": 'http://github.com'
+                },{
+                    "title": '图片',
+                    "thumb_media_id": picData.media_id,
+                    "author": 'Wallace',
+                    "digest": '没有摘要',
+                    "show_cover_pic": 1,
+                    "content": '没有内容',
+                    "content_source_url": 'http://github.com'
                 }]
             }
             var data = yield wechatApi.uploadMaterial('news',media,{})//上传永久图文素材
@@ -115,18 +133,17 @@ exports.reply = function* (next){
 
             var items = data.news_item
             var news = []
-
             items.forEach(function(item){
                 news.push({
                     title:item.title,
-                    description:item.description,
-                    picUrl:item.picUrl,
+                    description:item.content,
+                    picUrl:item.thumb_url,
                     url:item.url
                 });
             });
             reply = news
         }else if(content == 12){
-            var counts = yield wechatApi.countMaterial();//上传永久图片素材
+            var counts = yield wechatApi.countMaterial();
             console.log(JSON.stringify(counts));
             var result = yield [
                 wechatApi.batchMaterial({
@@ -160,14 +177,34 @@ exports.reply = function* (next){
             var tag = yield wechatApi.createTag('weixintest');
             var res3 = yield wechatApi.delTag(101);
             var res1 = yield wechatApi.getTag();
-            var re5 = yield wechatApi.batchtagTag(100,message.FromUserName);*/
-            //var re6 = yield wechatApi.batchtagTag(100,["oXGVcwNPgkIWx1Uxno49JXjDKzmI","oXGVcwDluAg83pBPe1g-99lSxcCE"])
-            //var re4 = yield wechatApi.usergetTag(100);
-            //var re7 = yield wechatApi.batchuntagTag(100,"oXGVcwNPgkIWx1Uxno49JXjDKzmI")
-            //var re4 = yield wechatApi.usergetTag(100);
+            var re5 = yield wechatApi.batchtagTag(100,message.FromUserName);
+            var re6 = yield wechatApi.batchtagTag(100,["oXGVcwNPgkIWx1Uxno49JXjDKzmI","oXGVcwDluAg83pBPe1g-99lSxcCE"])
+            var re4 = yield wechatApi.usergetTag(100);
+            var re7 = yield wechatApi.batchuntagTag(100,"oXGVcwNPgkIWx1Uxno49JXjDKzmI")*/
+            var re4 = yield wechatApi.usergetTag(100);
             var re8 = yield wechatApi.getlistTag(message.FromUserName)
             reply = 'Tag Done';
+        }else if(content == 14){
+/*
+            var res = yield wechatApi.usermark(message.FromUserName,'me');
+*/
+            var res1 = yield wechatApi.userget(message.FromUserName)
+            var openids = [{
+                    "openid": "oXGVcwDluAg83pBPe1g-99lSxcCE",
+                    "lang": "zh-CN"
+                }, {
+                    "openid": "oXGVcwNPgkIWx1Uxno49JXjDKzmI",
+                    "lang": "zh-CN"
+                }]
+
+            var res2 = yield wechatApi.userget(openids)
+            reply = 'usermark Done';
+        }else if(content == 15){
+            var res1 = yield wechatApi.userlist()
+            var res2 = yield wechatApi.userlist('oXGVcwNPgkIWx1Uxno49JXjDKzmI')
+            reply = 'userlist Done';
         }
+
         this.body = reply;
     }
     yield next
