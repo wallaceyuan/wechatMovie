@@ -2,9 +2,12 @@
  * Created by yuan on 2016/7/21.
  */
 
-var config = require('./config');
-var Wechat = require('./wechat/wechat');
+var config = require('../config')
+var Wechat = require('../wechat/wechat')
+var menu = require('./menu')
 var wechatApi = new Wechat(config.wechat);
+
+wechatApi.createMenu(menu)
 
 exports.reply = function* (next){
 
@@ -203,6 +206,8 @@ exports.reply = function* (next){
             var res1 = yield wechatApi.userlist()
             var res2 = yield wechatApi.userlist('oXGVcwNPgkIWx1Uxno49JXjDKzmI')
             reply = 'userlist Done';
+        }else if(content == 16){
+            wechatApi.createMenu(menu)
         }
 
         this.body = reply;
