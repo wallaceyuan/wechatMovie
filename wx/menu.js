@@ -3,51 +3,30 @@
  */
 'use strict'
 
-exports.button = {
-    "button":[{
+module.exports = {
+    "button":[
+    {
         "type":"click",
-        "name":"ΩÒ»’∏Ë«˙",
+        "name":"‰ªäÊó•Ê≠åÊõ≤",
         "key":"V1001_TODAY_MUSIC"
-    }, {
-        "name":"≤Àµ•",
-        "sub_button": [
+    },
+    {
+        "name":"ËèúÂçï",
+        "sub_button":[
             {
-                "type": "pic_sysphoto",
-                "name": "œµÕ≥≈ƒ’’∑¢Õº",
-                "key": "rselfmenu_1_0",
-                "sub_button": [ ]
+                "type":"view",
+                "name":"ÊêúÁ¥¢",
+                "url":"http://www.soso.com/"
             },
             {
-                "type": "pic_photo_or_album",
-                "name": "≈ƒ’’ªÚ’ﬂœ‡≤·∑¢Õº",
-                "key": "rselfmenu_1_1",
-                "sub_button": [ ]
+                "type":"view",
+                "name":"ËßÜÈ¢ë",
+                "url":"http://v.qq.com/"
             },
             {
-                "type": "pic_weixin",
-                "name": "Œ¢–≈œ‡≤·∑¢Õº",
-                "key": "rselfmenu_1_2",
-                "sub_button": [ ]
-            }
-        ]
-    }, {
-        "name":"≤Àµ•",
-        "sub_button": [
-            {
-                "name": "∑¢ÀÕŒª÷√",
-                "type": "location_select",
-                "key": "rselfmenu_2_0"
-            },
-            {
-                "type": "media_id",
-                "name": "Õº∆¨",
-                "media_id": "MEDIA_ID1"
-            },
-            {
-                "type": "view_limited",
-                "name": "ÕºŒƒœ˚œ¢",
-                "media_id": "MEDIA_ID2"
-            }
-        ]
+                "type":"click",
+                "name":"Ëµû‰∏Ä‰∏ãÊàë‰ª¨",
+                "key":"V1001_GOOD"
+            }]
     }]
 }
