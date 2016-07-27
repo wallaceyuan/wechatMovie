@@ -17,9 +17,9 @@ var api = {
 
 module.exports = function(opts,handler){
     var wechat = new Wechat(opts);
-
+    console.log('wechat');
     return function *(next){
-        console.log(this.query);
+        console.log('this.query',this.query,'this.method',this.method);
         var token = opts.token;
         var signature = this.query.signature;
         var nonce = this.query.nonce;
@@ -44,6 +44,7 @@ module.exports = function(opts,handler){
                 this.body = 'wrong';
                 return false
             }else{
+                //wechat.deleteMenu();
                 var data = yield getRawBody(this.req,{
                     length:this.length,
                     limit:'1mb',

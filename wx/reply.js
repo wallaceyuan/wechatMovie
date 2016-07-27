@@ -9,11 +9,13 @@ var wechatApi = new Wechat(config.wechat);
 
 
 exports.reply = function* (next){
-    wechatApi.deleteMenu().then(function(){
+    console.log('reply');
+
+/*    wechatApi.deleteMenu().then(function(){
        return wechatApi.createMenu(menu)
     }).then(function(msg){
         console.log(msg);
-    })
+    })*/
 
     var message = this.weixin
     if(message.MsgType === 'event'){

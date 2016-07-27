@@ -158,6 +158,7 @@ Wechat.prototype.updateAccessToken = function(opts){
 }
 
 Wechat.prototype.replay = function(){
+    console.log();
     var content = this.body//this.body = reply
     var message = this.weixin
 
@@ -883,15 +884,8 @@ Wechat.prototype.getMenu = function(){
 Wechat.prototype.deleteMenu = function(){
     var that = this;
     var deleteUrl = api.menu.delete
-
     return new Promise(function(resolve,reject){
-        console.log(111);
-        that.fecthAccessToken().then(function(data){
-            console.log(data);
-        })
-        console.log();
-    })
-/*        that
+        that
             .fecthAccessToken()
             .then(function(data){
                 var url = deleteUrl + '&access_token=' + data.access_token
@@ -908,7 +902,7 @@ Wechat.prototype.deleteMenu = function(){
                     reject(err);
                 })
             })
-    })*/
+    })
 }
 
 Wechat.prototype.selfMenu = function(){
