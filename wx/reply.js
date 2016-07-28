@@ -7,15 +7,14 @@ var Wechat = require('../wechat/wechat')
 var menu = require('./menu')
 var wechatApi = new Wechat(config.wechat);
 
+/*wechatApi.deleteMenu().then(function(){
+    return wechatApi.createMenu(menu)
+}).then(function(msg){
+    console.log(msg);
+})*/
 
 exports.reply = function* (next){
     console.log('reply');
-
-/*    wechatApi.deleteMenu().then(function(){
-       return wechatApi.createMenu(menu)
-    }).then(function(msg){
-        console.log(msg);
-    })*/
 
     var message = this.weixin
     if(message.MsgType === 'event'){

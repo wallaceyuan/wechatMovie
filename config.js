@@ -6,6 +6,7 @@
 var path = require('path');
 var util = require('./libs/util');
 var wechat_file = path.join(__dirname ,'./config/wechat.txt');
+var ticket_file = path.join(__dirname ,'./config/ticket.txt');
 
 var config = {
     wechat:{//
@@ -15,9 +16,16 @@ var config = {
         getAccessToken:function(){
             return util.readFileAsync(wechat_file,'utf-8')
         },
+        getTicket:function(){
+            return util.readFileAsync(ticket_file,'utf-8')
+        },
         saveAccessToken:function(data){
             data = JSON.stringify(data);
             return util.writeFileAsync(wechat_file,data)
+        },
+        saveTicket:function(){
+            data = JSON.stringify(data);
+            return util.writeFileAsync(ticket_file,data)
         }
     }
 }

@@ -82,7 +82,12 @@ var api = {
         delete:prefix+'menu/delete?',
         //https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=ACCESS_TOKEN
         self:prefix+'get_current_selfmenu_info?'
+    },
+    ticket:{
+        //https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=wx_card
+        get:prefix+'ticket/getticket?'
     }
+
 }
 
 
@@ -93,17 +98,14 @@ function Wechat(opts){
     this.getAccessToken = opts.getAccessToken;
     this.saveAccessToken = opts.saveAccessToken;
     this.fecthAccessToken(opts);
+    this.getTicket =  opts.getTicket;
+    this.saveTicket = opts.saveTicket
 }
 
 Wechat.prototype.fecthAccessToken = function(opts){
     var that = this;
-    if(this.access_token && this.expires_in){
-        if(this.isValidAccessToken(this)){
-            return Promise.resolve(this);
-        }
-    }
 
-    this.getAccessToken()
+    return this.getAccessToken()
         .then(function(data){
             try{
                 data = JSON.parse(data);
@@ -118,10 +120,30 @@ Wechat.prototype.fecthAccessToken = function(opts){
             }
         })
         .then(function(data){
-            //console.log('getAccessToken',data);
-            that.access_token = data.access_token;
-            that.expires_in = data.expires_in;
             that.saveAccessToken(data);
+            return Promise.resolve(data);
+        });
+}
+
+Wechat.prototype.fecthTicket = function(access_token){
+    var that = this;
+
+    return this.getTicket()
+        .then(function(data){
+            try{
+                data = JSON.parse(data);
+            }
+            catch(e){
+                return that.updateTicket(access_token)
+            }
+            if(that.isValidTicket(data)){
+                return Promise.resolve(data)
+            }else{
+                return that.updateTicket(access_token)
+            }
+        })
+        .then(function(data){
+            that.saveTicket(data);
             return Promise.resolve(data);
         });
 }
@@ -140,11 +162,40 @@ Wechat.prototype.isValidAccessToken = function(data){
     }
 }
 
+Wechat.prototype.isValidTicket = function(data){
+    if(!data || !data.ticket || !data.expires_in){
+        return false;
+    }
+    var ticket = data.ticket;
+    var expires_in = data.expires_in;
+    var now = (new Date().getTime())
+    if(now < expires_in){
+        return true
+    }else{
+        return false
+    }
+}
+
 Wechat.prototype.updateAccessToken = function(opts){
     var appID = opts.appID;
     var appSecret = opts.appSecret;
     var url = api.accessToken + '&appid=' +appID+ '&secret='+appSecret;
     console.log('updateAccessToken url',url);
+    return new Promise(function(resolve,reject){
+        request({url:url,json:true}).then(function(response){
+            console.log('response body',response.body);
+            var data = response.body;
+            var now = (new Date().getTime());
+            var expire_in = now + (data.expires_in -20) * 1000;
+            data.expires_in = expire_in
+            resolve(data);
+        });
+    })
+}
+
+Wechat.prototype.updateTicket = function(access_token){
+    var url = api.ticket.get + '?access_token=' +access_token+'&type=jsapi';
+    console.log('updateTicket url',url);
     return new Promise(function(resolve,reject){
         request({url:url,json:true}).then(function(response){
             console.log('response body',response.body);
