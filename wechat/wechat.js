@@ -194,8 +194,7 @@ Wechat.prototype.updateAccessToken = function(opts){
 }
 
 Wechat.prototype.updateTicket = function(access_token){
-    var url = api.ticket.get + '?access_token=' +access_token+'&type=jsapi';
-    console.log('updateTicket url',url);
+    var url = api.ticket.get + 'access_token=' +access_token+'&type=jsapi';
     return new Promise(function(resolve,reject){
         request({url:url,json:true}).then(function(response){
             console.log('response body',response.body);

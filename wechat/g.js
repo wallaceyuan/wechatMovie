@@ -17,7 +17,6 @@ var api = {
 
 module.exports = function(opts,handler){
     var wechat = new Wechat(opts);
-    console.log('wechat');
     return function *(next){
         console.log('this.query',this.query,'this.method',this.method);
         var token = opts.token;
@@ -60,10 +59,8 @@ module.exports = function(opts,handler){
                 this.weixin = message;
                 yield handler.call(this,next);
                 wechat.replay.call(this);
-
                 //console.log('g content',content);
                 //console.log('g message',message);
-
             }
         }
     }

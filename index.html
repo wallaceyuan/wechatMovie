@@ -9,6 +9,33 @@
 <script type="text/javascript" src="//cdn.bootcss.com/zepto/1.0rc1/zepto.min.js"></script>
 <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script>
+    $('h1').on('tap',function(){
+        if(!isRecording){
+            isRecording = true;
+            wx.startRecord({
+                cancel:function(){
+                    alert('那就不搜了哦');
+                }
+            });
+            return
+        }
+        isRecording = false;
+        wx.stopRecord({
+            success: function (res) {
+                var localId = res.localId;
+                wx.translateVoice({
+                    localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                    isShowProgressTips: 1, // 默认为1，显示进度提示
+                    success: function (res) {
+                        alert(res.translateResult); // 语音识别的结果
+                    }
+                });
+            }
+        });
+
+    });
+    $('#poster').html('<img src="'+data.subjects[0].images.medium+'" />');
+
     wx.config({
         debug: false,
         appId: 'wxe539b74f1500b34f',
