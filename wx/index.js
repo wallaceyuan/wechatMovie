@@ -1,12 +1,16 @@
 /**
+ * Created by Yuan on 2016/8/7.
+ */
+/**
  * Created by yuan on 2016/7/21.
  */
 'use strict'
 
 var path = require('path');
-var util = require('./libs/util');
-var wechat_file = path.join(__dirname ,'./config/wechat.txt');
-var ticket_file = path.join(__dirname ,'./config/ticket.txt');
+var util = require('../libs/util');
+var wechat_file = path.join(__dirname ,'../config/wechat.txt');
+var ticket_file = path.join(__dirname ,'../config/ticket.txt');
+var Wechat = require('../wechat/wechat');
 
 var config = {
     wechat:{//
@@ -30,5 +34,13 @@ var config = {
     }
 }
 
-module.exports = config;
+exports.wechatOptions = {
+    wechat:config.wechat
+}
 
+exports.getWechat = function(){
+
+    var wechatApi = new Wechat(config.wechat);
+
+    return wechatApi
+}
