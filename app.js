@@ -6,9 +6,6 @@
 var Koa = require('koa');
 var path = require('path');
 var app = new Koa();
-var heredoc = require('heredoc');
-var reply = require('./wx/reply');
-var wechat = require('./wechat/g');
 var mongoose = require('mongoose')
 var fs = require('fs')
 var dbUrl = 'mongodb://localhost/moive'
@@ -40,28 +37,34 @@ var Router = require('koa-router');
 var router = new Router()
 
 var game = require('./app/controllers/game')
-//var wechat = require('./app/controllers/wechat')
+var wechat = require('./app/controllers/wechat')
+var views = require('koa-views')
+
+app.use(views(__dirname + '/app/views'),{
+    extension:'jade'
+})
 
 router.get('/movie',game.movie)
-/*router.get('/wx',wechat.hear)
-router.post('/wx',wechat.hear)*/
+router.get('/wx',wechat.hear)
+router.post('/wx',wechat.hear)
 
 
 var wx = require('./wx/index');
 var menu = require('./wx/menu')
-var wechatApi = wx.getWechat();
+//var wechatApi = wx.getWechat();
 
 app
     .use(router.routes())
     .use(router.allowedMethods())
 
-app.use(wechat(wx.wechatOptions.wechat, reply.reply));
 
-wechatApi.deleteMenu().then(function(){
-    return wechatApi.createMenu(menu)
-}).then(function(msg){
-    console.log(msg);
-})
+/*
+ wechatApi.deleteMenu().then(function(){
+ return wechatApi.createMenu(menu)
+ }).then(function(msg){
+ console.log(msg);
+ })
+ */
 
 
 app.listen(3000);

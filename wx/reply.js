@@ -6,23 +6,28 @@ var config = require('../config')
 var Wechat = require('../wechat/wechat')
 var menu = require('./menu')
 var wechatApi = new Wechat(config.wechat);
-
+var Movie = require('../app/api/movie')
 /*wechatApi.deleteMenu().then(function(){
-    return wechatApi.createMenu(menu)
-}).then(function(msg){
-    console.log(msg);
-})*/
+ return wechatApi.createMenu(menu)
+ }).then(function(msg){
+ console.log(msg);
+ })*/
 
 exports.reply = function* (next){
-    console.log('reply');
-
     var message = this.weixin
     if(message.MsgType === 'event'){
         if(message.Event === 'subscribe'){
             if(message.EventKey){
                 console.log('扫二维码进来'+message.EventKey+ ' ' + message.ticket);
             }
-            this.body ='哈哈，你订阅了一个微信号\r\n'/* +'消息ID:' +message.MsgId*/
+            this.body ='哈哈，你订阅了一个微信号\r\n'+
+                '回复 1-3，测试文字回复\n'+
+                '回复 4，测试图文回复\n'+
+                '回复 首页，回到电影首页\n'+
+                '回复 微信，完成微信绑定\n'+
+                '回复 游戏，进入游戏页面\n'+
+                '回复 电影名字，查询相关电影\n'+
+                '<a href="http://ltbho8ed41.proxy.qqbrowser.cc/movie">点击这里开始语音查电影</a>'
         }else if(message.Event === 'unsubscribe'){
             console.log('无情取关');
             this.body = '无情取关'
@@ -178,32 +183,32 @@ exports.reply = function* (next){
             reply = 12;
             console.log(JSON.stringify(result));
         }else if(content == 13){
-/*            var tag = yield wechatApi.createTag('weixin2');
-            var res1 = yield wechatApi.getTag();
-            var res2 = yield wechatApi.updateTag(100,'weixin100');
-            var res1 = yield wechatApi.getTag();
-            var tag = yield wechatApi.createTag('weixintest');
-            var res3 = yield wechatApi.delTag(101);
-            var res1 = yield wechatApi.getTag();
-            var re5 = yield wechatApi.batchtagTag(100,message.FromUserName);
-            var re6 = yield wechatApi.batchtagTag(100,["oXGVcwNPgkIWx1Uxno49JXjDKzmI","oXGVcwDluAg83pBPe1g-99lSxcCE"])
-            var re4 = yield wechatApi.usergetTag(100);
-            var re7 = yield wechatApi.batchuntagTag(100,"oXGVcwNPgkIWx1Uxno49JXjDKzmI")*/
+            /*            var tag = yield wechatApi.createTag('weixin2');
+             var res1 = yield wechatApi.getTag();
+             var res2 = yield wechatApi.updateTag(100,'weixin100');
+             var res1 = yield wechatApi.getTag();
+             var tag = yield wechatApi.createTag('weixintest');
+             var res3 = yield wechatApi.delTag(101);
+             var res1 = yield wechatApi.getTag();
+             var re5 = yield wechatApi.batchtagTag(100,message.FromUserName);
+             var re6 = yield wechatApi.batchtagTag(100,["oXGVcwNPgkIWx1Uxno49JXjDKzmI","oXGVcwDluAg83pBPe1g-99lSxcCE"])
+             var re4 = yield wechatApi.usergetTag(100);
+             var re7 = yield wechatApi.batchuntagTag(100,"oXGVcwNPgkIWx1Uxno49JXjDKzmI")*/
             var re4 = yield wechatApi.usergetTag(100);
             var re8 = yield wechatApi.getlistTag(message.FromUserName)
             reply = 'Tag Done';
         }else if(content == 14){
-/*
-            var res = yield wechatApi.usermark(message.FromUserName,'me');
-*/
+            /*
+             var res = yield wechatApi.usermark(message.FromUserName,'me');
+             */
             var res1 = yield wechatApi.userget(message.FromUserName)
             var openids = [{
-                    "openid": "oXGVcwDluAg83pBPe1g-99lSxcCE",
-                    "lang": "zh-CN"
-                }, {
-                    "openid": "oXGVcwNPgkIWx1Uxno49JXjDKzmI",
-                    "lang": "zh-CN"
-                }]
+                "openid": "oXGVcwDluAg83pBPe1g-99lSxcCE",
+                "lang": "zh-CN"
+            }, {
+                "openid": "oXGVcwNPgkIWx1Uxno49JXjDKzmI",
+                "lang": "zh-CN"
+            }]
 
             var res2 = yield wechatApi.userget(openids)
             reply = 'usermark Done';
@@ -213,8 +218,51 @@ exports.reply = function* (next){
             reply = 'userlist Done';
         }else if(content == 16){
             wechatApi.createMenu(menu)
+        }else {
+            var movies = yield Movie.searchByName(content)
+            if(!movies || movies.length === 0){
+                movies = yield Movie.searchByDouban(content)
+            }
+            if(movies && movies.length > 0){
+                reply = []
+                movies = movies.slice(0,10)
+
+                movies.forEach( function(movie) {
+                    reply.push({
+                        title:movie.title,
+                        description:movie.description,
+                        picUrl:movie.images.large,
+                        url:movie.alt
+                    })
+                })
+            }else{
+                reply = '没有查询到匹配的电影 换一个试试吧~'
+            }
         }
 
+        this.body = reply;
+    }else if(message.MsgType === 'voice'){
+        var voiceText = message.Recognition
+
+        var movies = yield Movie.searchByName(voiceText)
+        if(!movies || movies.length === 0){
+            movies = yield Movie.searchByDouban(voiceText)
+        }
+        if(movies && movies.length > 0){
+            reply = []
+            movies = movies.slice(0,10)
+
+            movies.forEach(function(movie) {
+                reply.push({
+                    title:movie.title,
+                    description:movie.description,
+                    picUrl:movie.images.large,
+                    url:movie.alt
+                })
+            })
+        }else{
+            reply = '没有查询到匹配的电影 换一个试试吧~'
+        }
         this.body = reply;
     }
     yield next

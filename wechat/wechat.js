@@ -104,7 +104,7 @@ function Wechat(opts){
 
 Wechat.prototype.fecthAccessToken = function(opts){
     var that = this;
-
+    //console.log(107,opts);
     return this.getAccessToken()
         .then(function(data){
             try{
@@ -180,7 +180,7 @@ Wechat.prototype.updateAccessToken = function(opts){
     var appID = opts.appID;
     var appSecret = opts.appSecret;
     var url = api.accessToken + '&appid=' +appID+ '&secret='+appSecret;
-    console.log('updateAccessToken url',url);
+    //console.log('updateAccessToken url',url);
     return new Promise(function(resolve,reject){
         request({url:url,json:true}).then(function(response){
             console.log('response body',response.body);
@@ -208,7 +208,7 @@ Wechat.prototype.updateTicket = function(access_token){
 }
 
 Wechat.prototype.replay = function(){
-    console.log();
+
     var content = this.body//this.body = reply
     var message = this.weixin
 
@@ -241,6 +241,7 @@ Wechat.prototype.uploadMaterial = function(type,material,permanent){
     }
 
     return new Promise(function(resolve,reject){
+        console.log(244);
         that
             .fecthAccessToken()
             .then(function(data){
@@ -285,6 +286,7 @@ Wechat.prototype.fetchMaterial = function(media_id,type,permanent){
     }
 
     return new Promise(function(resolve,reject){
+        console.log(289);
         that
             .fecthAccessToken()
             .then(function(data){
@@ -886,6 +888,7 @@ Wechat.prototype.createMenu = function(button){
     var createUrl = api.menu.create
 
     return new Promise(function(resolve,reject){
+        console.log(891);
         that
             .fecthAccessToken()
             .then(function(data){
@@ -911,6 +914,7 @@ Wechat.prototype.getMenu = function(){
     var getUrl = api.menu.get
 
     return new Promise(function(resolve,reject){
+        console.log(917);
         that
             .fecthAccessToken()
             .then(function(data){
@@ -935,9 +939,11 @@ Wechat.prototype.deleteMenu = function(){
     var that = this;
     var deleteUrl = api.menu.delete
     return new Promise(function(resolve,reject){
+        console.log(942);
         that
             .fecthAccessToken()
             .then(function(data){
+                console.log(data);
                 var url = deleteUrl + '&access_token=' + data.access_token
                 request({"url":url,"json":true}).then(function(response){
                     var _data = response.body;
