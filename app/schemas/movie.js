@@ -3,7 +3,7 @@ var Schema = mongoose.Schema
 var ObjectId = Schema.Types.ObjectId
 
 var MovieSchema = new Schema({
-  directors: String,
+  director: String,
   title: String,
   language: String,
   doubanId: String,
@@ -12,6 +12,7 @@ var MovieSchema = new Schema({
   flash: String,
   poster: String,
   year: Number,
+  genres:[String],
   pv: {
     type: Number,
     default: 0

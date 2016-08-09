@@ -51,25 +51,28 @@ exports.searchByDouban = function *(q){
     if(subjects.length > 0){
         var queryArray = []
         subjects.forEach(function(item){
-            queryArray.push( function *(){
-                var movie =¡¡yield Movie.findOne({doubanId: item.id})
+            queryArray.push(function *(){
+                var movie = yield Movie.findOne({doubanId: item.id})
                 if(movie){
                     movies.push(movie)
                 }else{
-                    Movie.create(item, function(error,doc){
-                        if(error) {
-                            console.log(error);
-                        } else {
-                            console.log(doc);
-                        }
-                    });
+                    var directors = item.directors || []
+                    var director = directors[0] || ""
+
+                    movie = new Movie({
+                        director: director.name || "",
+                        title: item.title,
+                        doubanId: item.id,
+                        poster: item.images.large,
+                        year: item.year,
+                        genres:item.genres
+                    })
+                    movie = yield movie.save();
+                    movies.push(movie)
                 }
             })
         })
+        yield queryArray
     }
-
-
-
-
-    return subjects
+    return movies
 }

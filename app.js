@@ -40,11 +40,12 @@ var game = require('./app/controllers/game')
 var wechat = require('./app/controllers/wechat')
 var views = require('koa-views')
 
-app.use(views(__dirname + '/app/views'),{
+app.use(views(__dirname + '/app/views',{
     extension:'jade'
-})
+}))
 
-router.get('/movie',game.movie)
+router.get('/movie',game.guess)
+router.get('/movie/:id',game.find)
 router.get('/wx',wechat.hear)
 router.post('/wx',wechat.hear)
 

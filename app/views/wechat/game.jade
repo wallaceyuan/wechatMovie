@@ -1,0 +1,124 @@
+doctype
+html
+head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+    title 猜电影
+body
+    h1 根据标题猜电影
+    p#title
+    div#directors
+    div#year
+    div#poster
+    script(src="//cdn.bootcss.com/zepto/1.0rc1/zepto.min.js")
+    script(src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js")
+    script.
+        wx.config({
+            debug: false,
+            appId: 'wxe539b74f1500b34f',
+            timestamp: '#{timestamp}',
+            nonceStr: '#{noncestr}',
+            signature: '#{signature}',
+            jsApiList: [
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage',
+                'onMenuShareQQ',
+                'onMenuShareWeibo',
+                'onMenuShareQZone',
+                'translateVoice',
+                'startRecord',
+                'stopRecord',
+                'onVoiceRecordEnd',
+                'previewImage'
+            ]
+        });
+        wx.ready(function () {
+            wx.checkJsApi({
+                jsApiList: [
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'onMenuShareQZone',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onVoiceRecordEnd',
+                    'previewImage'
+                ],
+                success: function (res) {
+                    console.log(res);
+                }
+            });
+            var shareContent = {
+                title: '',
+                desc: '',
+                link: '',
+                imgUrl: '',
+                type: '', // 分享类型,music、video或link，不填默认为link
+                dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                success: function () {
+                    alert('分享成功')
+                },
+                cancel: function () {
+                    alert('分享失败')
+                }
+            }
+            wx.onMenuShareAppMessage(shareContent)
+            wx.onMenuShareTimeline(shareContent)
+            var isRecording = false
+            var slide
+            $('#poster').on('tap', function () {
+                wx.previewImage(slide);
+            });
+            $('h1').on('tap', function () {
+                if (!isRecording) {
+                    isRecording = true;
+                    wx.startRecord({
+                        cancel: function () {
+                            alert('那就不搜了哦');
+                        }
+                    });
+                    return
+                }
+                isRecording = false;
+                wx.stopRecord({
+                    success: function (res) {
+                        var localId = res.localId;
+                        wx.translateVoice({
+                            localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                            isShowProgressTips: 1, // 默认为1，显示进度提示
+                            success: function (res) {
+                                var result = res.translateResult
+                                $.ajax({
+                                    type: 'get',
+                                    url: 'https://api.douban.com/v2/movie/search?q=' + result,
+                                    dataType: 'jsonp',
+                                    jsonp: 'callback',
+                                    success: function (data) {
+                                        var subject = data.subjects[0]
+                                        $('#year').html(subject.year)
+                                        $('#title').html(subject.title)
+                                        $('#directors').html(subject.directors.name)
+                                        $('#poster').html('<img src="' + data.subjects[0].images.large + '" />');
+                                        shareContent.title = subject.title
+                                        shareContent.desc = '我搜出来了' + subject.title
+                                        shareContent.link = 'http://wt8drrzc8w.proxy.qqbrowser.cc/movie'
+                                        shareContent.imgUrl = data.subjects[0].images.small
+                                        shareContent.type = 'link'
+                                        slide = {
+                                            current: data.subjects[0].images.small,
+                                            urls: [data.subjects[0].images.small]
+                                        }
+                                        data.subjects.forEach(function (item) {
+                                            slide.urls.push(item.images.large)
+                                        })
+                                    }
+                                })
+                            }
+                        });
+                    }
+                });
+            });
+        });
+                                                      

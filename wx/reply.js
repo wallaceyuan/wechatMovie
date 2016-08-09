@@ -256,8 +256,8 @@ exports.reply = function* (next){
                 reply.push({
                     title:movie.title,
                     description:movie.description,
-                    picUrl:movie.images.large,
-                    url:movie.alt
+                    picUrl:movie.poster,
+                    url:'http://7d332322.ngrok.io/wx/'+movie._id
                 })
             })
         }else{
