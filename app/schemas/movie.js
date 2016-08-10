@@ -12,6 +12,7 @@ var MovieSchema = new Schema({
   flash: String,
   poster: String,
   year: Number,
+  coutry:String,
   genres:[String],
   pv: {
     type: Number,

@@ -1,3 +1,6 @@
+
+'use strict'
+
 var mongoose = require('mongoose')
 var Movie = mongoose.model('Movie')
 var Category = mongoose.model('Category')
@@ -5,6 +8,7 @@ var koa_request = require('koa-request')
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
 var _ = require('lodash');
+var co = require('co');
 // index page
 exports.findAll = function *() {
     var category = yield Category
@@ -46,19 +50,18 @@ exports.searchById = function *(id) {
 
 function updateMovies(movie){
     var options = {
-        url:'https://api.douban.com/v2/movie/subject'+movie.doubanId,
+        url:'https://api.douban.com/v2/movie/subject/'+movie.doubanId,
         json:true
     }
     request(options).then(function(response){
-        console.log('response body',response.body);
         var data = response.body;
+        if(data.code == 5000) return
 
-        _.extends(movie,{
+        _.extend(movie,{
             coutry:data.countries[0],
             summary:data.summary
         })
         var genres = data.genres
-
         if(genres && genres.length > 0){
             var cateArray = []
             genres.forEach(function(genre){
@@ -78,8 +81,12 @@ function updateMovies(movie){
                     }
                 })
             });
+
+            co(function *(){
+                yield cateArray
+            })
         }else{
-            //yield movie.save()
+            movie.save()
         }
     });
 }
@@ -122,12 +129,11 @@ exports.searchByDouban = function *(q){
             })
         })
 
+        yield queryArray
+
         movies.forEach(function(movie){
             updateMovies(movie)
         });
-
-        yield queryArray
-
     }
 
 

@@ -53,7 +53,7 @@ function formatMessage(result){
 exports.formatMessage = formatMessage
 
 exports.tpl = function(content,message){
-    console.log('tpl','content',content);
+    //console.log('tpl','content',content);
     var info = {}
     var type = 'text'
     var fromUsername = message.FromUserName
@@ -61,7 +61,7 @@ exports.tpl = function(content,message){
     if(Array.isArray(content)){
         type = 'news'
     }
-    console.log(content);
+    //console.log(content);
     type = content.type || type
     info.content = content
     info.createTime = new Date().getTime()

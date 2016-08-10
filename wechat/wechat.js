@@ -104,7 +104,6 @@ function Wechat(opts){
 
 Wechat.prototype.fecthAccessToken = function(opts){
     var that = this;
-    //console.log(107,opts);
     return this.getAccessToken()
         .then(function(data){
             try{
@@ -802,7 +801,6 @@ Wechat.prototype.sendByGroup = function(type,message,groupId){
             tag_id : groupId
         }
     }
-    console.log(msg);
     return new Promise(function(resolve,reject){
         that
             .fecthAccessToken()
@@ -835,7 +833,6 @@ Wechat.prototype.sendById = function(type,message,openId){
     msg[type] = message
 
 
-    console.log(msg);
     return new Promise(function(resolve,reject){
         that
             .fecthAccessToken()
@@ -888,7 +885,6 @@ Wechat.prototype.createMenu = function(button){
     var createUrl = api.menu.create
 
     return new Promise(function(resolve,reject){
-        console.log(891);
         that
             .fecthAccessToken()
             .then(function(data){
@@ -914,7 +910,6 @@ Wechat.prototype.getMenu = function(){
     var getUrl = api.menu.get
 
     return new Promise(function(resolve,reject){
-        console.log(917);
         that
             .fecthAccessToken()
             .then(function(data){
@@ -939,11 +934,9 @@ Wechat.prototype.deleteMenu = function(){
     var that = this;
     var deleteUrl = api.menu.delete
     return new Promise(function(resolve,reject){
-        console.log(942);
         that
             .fecthAccessToken()
             .then(function(data){
-                console.log(data);
                 var url = deleteUrl + '&access_token=' + data.access_token
                 request({"url":url,"json":true}).then(function(response){
                     var _data = response.body;

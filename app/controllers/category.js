@@ -2,37 +2,28 @@ var mongoose = require('mongoose')
 var Category = mongoose.model('Category')
 
 // admin new page
-exports.new = function(req, res) {
-  res.render('category_admin', {
+exports.new = function *(next) {
+  this.render('pages/category_admin', {
     title: 'imooc 后台分类录入页',
     category: {}
   })
 }
 
 // admin post movie
-exports.save = function(req, res) {
-  var _category = req.body.category
+exports.save = function *(next) {
+  var _category = this.request.body.category
   var category = new Category(_category)
 
-  category.save(function(err, category) {
-    if (err) {
-      console.log(err)
-    }
+  yield category.save()
+  this.redirect('/admin/category/list')
 
-    res.redirect('/admin/category/list')
-  })
 }
 
 // catelist page
-exports.list = function(req, res) {
-  Category.fetch(function(err, catetories) {
-    if (err) {
-      console.log(err)
-    }
-
-    res.render('categorylist', {
-      title: 'imooc 分类列表页',
-      catetories: catetories
-    })
+exports.list = function *(next) {
+  var catetories = yield Category.fetch()
+  yield this.render('pages/categorylist', {
+    title: 'imooc 分类列表页',
+    catetories: catetories
   })
 }

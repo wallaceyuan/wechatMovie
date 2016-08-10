@@ -232,7 +232,7 @@ exports.reply = function* (next){
                         title:movie.title,
                         description:movie.description,
                         picUrl:movie.poster,
-                        url:'http://ltbho8ed41.proxy.qqbrowser.cc/movie/'+movie._id
+                        url:'http://ltbho8ed41.proxy.qqbrowser.cc/wechat/movie/'+movie._id
                     })
                 })
             }else{
@@ -255,9 +255,9 @@ exports.reply = function* (next){
             movies.forEach(function(movie) {
                 reply.push({
                     title:movie.title,
-                    description:movie.description,
+                    description:movie.summary,
                     picUrl:movie.poster,
-                    url:'http://ltbho8ed41.proxy.qqbrowser.cc/movie/'+movie._id
+                    url:'http://ltbho8ed41.proxy.qqbrowser.cc/wechat/movie/'+movie._id
                 })
             })
         }else{
