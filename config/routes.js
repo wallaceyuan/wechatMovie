@@ -11,8 +11,8 @@ var Comment = require('../app/controllers/comment')
 var Category = require('../app/controllers/category')
 
 //wechat
-var game = require('../app/controllers/game')
-var wechat = require('../app/controllers/wechat')
+var Game = require('../app/controllers/game')
+var Wechat = require('../app/controllers/wechat')
 
 module.exports = function(router) {
 
@@ -26,7 +26,6 @@ module.exports = function(router) {
         next()
     })
 */
-
     // Index
     router.get('/', Index.index)
 
@@ -50,10 +49,10 @@ module.exports = function(router) {
 */
 
     //weixin
-    router.get('/wechat/movie',game.guess)
-    router.get('/wechat/movie/:id',game.find)
-    router.get('/wx',wechat.hear)
-    router.post('/wx',wechat.hear)
+    router.get('/wechat/movie',Game.guess)
+    router.get('/wechat/movie/:id',Game.find)
+    router.get('/wx',Wechat.hear)
+    router.post('/wx',Wechat.hear)
 
     // Comment
 /*    router.post('/user/comment', User.signinRequired, Comment.save)

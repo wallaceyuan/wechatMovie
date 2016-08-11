@@ -39,7 +39,6 @@ exports.wechatOptions = {
 }
 
 exports.getWechat = function(){
-
     var wechatApi = new Wechat(config.wechat);
 
     return wechatApi

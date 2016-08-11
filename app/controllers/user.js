@@ -22,11 +22,15 @@ exports.signup = function *(next) {
   }*/
   if (user) {
     this.redirect('/signin')
+
+    yield next
   }
   else {
     user = new User(_user)
 
     yield user.save()
+
+    this.session.user = user
 
     this.redirect('/')
 
@@ -47,14 +51,16 @@ exports.signin = function *(next) {
     return next
   }
 
-  var isMatch = yield user.comparePassword(password)
+  var isMatch = yield user.comparePassword(password,user.password)
 
   if (isMatch) {
     this.session.user = user
     return this.redirect('/')
+    yield next
   }
   else {
     return this.redirect('/signin')
+    yield next
   }
 }
 

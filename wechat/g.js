@@ -4,7 +4,6 @@
 'use strict'
 
 var sha1 = require('sha1');
-var Promise = require('bluebird');
 var getRawBody = require('raw-body');
 var Wechat = require('./wechat');
 var util = require('./util');
@@ -49,7 +48,7 @@ module.exports = function(opts,handler){
                     limit:'1mb',
                     encoding:this.charset
                 });
-
+                //data <Buffer 3c 78 6d 6c 3e 3c 54 6f 55 73 65 72 4e 61 6d 65 3e 3c 21 5b 43 44 41 54 41 5b 67 68 5f 61 32 32 34 65 31 30 36 31 64 34 61 5d 5d 3e 3c 2f 54 6f 55 73 ... >
                 //console.log('buffer-xml',data.toString());
 
                 var content = yield util.parseXMLAsync(data);//xml to js
