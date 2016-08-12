@@ -122,6 +122,7 @@ exports.searchByDouban = function *(q){
                         poster: item.images.large,
                         year: item.year,
                         genres:item.genres,
+
                     })
                     movie = yield movie.save();
                     movies.push(movie)

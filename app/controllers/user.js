@@ -15,7 +15,7 @@ exports.showSignin = function *(next) {
 }
 
 exports.signup = function *(next) {
-  var _user = this.request.body
+  var _user = this.request.body.user
   var user = yield User.findOne({name: _user.name}).exec()
 /*  if (err) {
     console.log(err)
@@ -39,7 +39,7 @@ exports.signup = function *(next) {
 
 // signin
 exports.signin = function *(next) {
-  var _user = this.request.body
+  var _user = this.request.body.user
   var name = _user.name
   var password = _user.password
 

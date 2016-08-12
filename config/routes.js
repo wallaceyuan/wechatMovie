@@ -37,16 +37,17 @@ module.exports = function(router) {
     router.get('/logout', User.logout)
     router.get('/admin/user/list', User.signinRequired, User.adminRequired, User.list)
 
+
     // Movie
-/*
     router.get('/movie/:id', Movie.detail)
+/*
     router.get('/admin/movie/new', User.signinRequired, User.adminRequired, Movie.new)
     router.get('/admin/movie/update/:id', User.signinRequired, User.adminRequired, Movie.update)
     router.post('/admin/movie', User.signinRequired, User.adminRequired, Movie.savePoster, Movie.save)
     router.get('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.list)
     router.delete('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.del)
-
 */
+
 
     //weixin
     router.get('/wechat/movie',Game.guess)

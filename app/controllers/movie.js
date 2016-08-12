@@ -11,14 +11,13 @@ var path = require('path')
 
 // detail page
 exports.detail = function *(next) {
-  var id = this.request.params.id
 
-  yield Movie.update({_id: id}, {$inc: {pv: 1}})
+  var id = this.params.id
+  if(id == 'undefined') return
+  yield Movie.update({_id: id}, {$inc: {pv: 1}}).exec()
 
-  var movie = yield Movie
-      .findOne({_id: id})
-      .exec()
-
+  var movie = yield Movie.findOne({_id: id}).exec()
+  console.log(movie);
   var comments = yield Comment
       .find({movie: id})
       .populate('from', 'name')
@@ -115,7 +114,7 @@ exports.save = function *(next) {
 
       yield category.save()
       this.redirect('/movie/' + movie._id)
-
+      yield next
     }
     else if (categoryName) {
       var category = yield new Category({

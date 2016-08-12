@@ -13,7 +13,6 @@ var Movie = require('../api/movie')
 
 
 exports.guess = function *(next) {
-  console.log('guess');
   var wechatApi = new Wechat(config.wechat);
   var data = yield wechatApi.fecthAccessToken();
   var access_token = data.access_token
@@ -25,7 +24,6 @@ exports.guess = function *(next) {
 }
 
 exports.find = function *(next) {
-  console.log('find');
   var id = this.params.id
   var wechatApi = new Wechat(config.wechat);
   var data = yield wechatApi.fecthAccessToken();
@@ -36,6 +34,7 @@ exports.find = function *(next) {
 
   var params = util.sign(ticket, url);
   var movie = yield Movie.searchById(id)
+  console.log(movie);
   params.movie = movie
   yield this.render('wechat/movie',params);
 }
