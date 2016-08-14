@@ -13,7 +13,7 @@ var bodyParser = require('koa-bodyparser');
 var views = require('koa-views')
 var Router = require('koa-router');
 var router = new Router()
-
+var moment = require('moment')
 // models loading
 var dbUrl = 'mongodb://localhost/movie'
 mongoose.connect(dbUrl)
@@ -46,7 +46,10 @@ walk(models_path)
 var User = mongoose.model('User')
 
 app.use(views(__dirname + '/app/views',{
-    extension:'jade'
+    extension:'jade',
+    locals:{
+        moment:moment
+    }
 }))
 
 

@@ -8,22 +8,23 @@ exports.save = function *(next) {
 
   if (_comment.cid) {
 
-    var comment = Comment.findOne({_id: _comment.cid}).exec()
+    let comment = yield Comment.findOne({_id: _comment.cid}).exec()
     var reply = {
       from: _comment.from,
       to: _comment.tid,
       content: _comment.content
     }
-
     comment.reply.push(reply)
-
     yield comment.save()
-    this.redirect('/movie/' + movieId)
-
+    this.body = { success :1 }
   }
   else {
-    var comment = new Comment(_comment)
+    var comment = new Comment({
+        movie:_comment.movie,
+        from:_comment.from,
+        content:_comment.content
+    })
     yield comment.save()
-    this.redirect('/movie/' + movieId)
+    this.body = { success :1 }
   }
 }

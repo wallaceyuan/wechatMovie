@@ -8,11 +8,16 @@ var menu = require('./menu')
 var wechatApi = new Wechat(config.wechat);
 var Movie = require('../app/api/movie')
 /*wechatApi.deleteMenu().then(function(){
- return wechatApi.createMenu(menu)
- }).then(function(msg){
- console.log(msg);
- })*/
-
+    return wechatApi.createMenu(menu)
+}).then(function(msg){
+    console.log(msg);
+})*/
+var help = '哈哈，你订阅了一个微信号\r\n'+
+    '回复 1-3，测试文字回复\n'+
+    '回复 4，测试图文回复\n'+
+    '回复 首页，回到电影首页\n'+
+    '回复 电影名字，查询相关电影\n'+
+    '<a href="http://ltbho8ed41.proxy.qqbrowser.cc/movie">点击这里开始语音查电影</a>';
 exports.reply = function* (next){
     var message = this.weixin
     if(message.MsgType === 'event'){
@@ -20,21 +25,60 @@ exports.reply = function* (next){
             if(message.EventKey){
                 console.log('扫二维码进来'+message.EventKey+ ' ' + message.ticket);
             }
-            this.body ='哈哈，你订阅了一个微信号\r\n'+
-                '回复 1-3，测试文字回复\n'+
-                '回复 4，测试图文回复\n'+
-                '回复 首页，回到电影首页\n'+
-                '回复 微信，完成微信绑定\n'+
-                '回复 游戏，进入游戏页面\n'+
-                '回复 电影名字，查询相关电影\n'+
-                '<a href="http://ltbho8ed41.proxy.qqbrowser.cc/movie">点击这里开始语音查电影</a>'
+            this.body = help
         }else if(message.Event === 'unsubscribe'){
             console.log('无情取关');
             this.body = '无情取关'
         }else if(message.Event === 'LOCATION'){
             this.body = '您上报的位置是：'+message.Latitude+' '+message.Longitude+' '+message.Precision;
         }else if(message.Event === 'CLICK'){
-            this.body = '您点击了菜单：'+message.EventKey ;
+            var news = []
+            if(message.EventKey === 'movie_hot'){
+                let movies = yield Movie.findHotMovies(-1,10)
+
+                movies.forEach( function(movie) {
+                    news.push({
+                        title:movie.title,
+                        description:movie.description,
+                        picUrl:movie.poster,
+                        url:'http://ltbho8ed41.proxy.qqbrowser.cc/wechat/movie/'+movie._id
+                    })
+                })
+            }else if(message.EventKey === 'movie_cold'){
+                let movies = yield Movie.findHotMovies(1,10)
+
+                movies.forEach( function(movie) {
+                    news.push({
+                        title:movie.title,
+                        description:movie.description,
+                        picUrl:movie.poster,
+                        url:'http://ltbho8ed41.proxy.qqbrowser.cc/wechat/movie/'+movie._id
+                    })
+                })
+            }else if(message.EventKey === 'movie_crime' ){
+                let cat = yield Movie.findMoviesByCat('犯罪')
+                cat.movies.forEach(function(movie) {
+                    news.push({
+                        title:movie.title,
+                        description:movie.description,
+                        picUrl:movie.poster,
+                        url:'http://ltbho8ed41.proxy.qqbrowser.cc/wechat/movie/'+movie._id
+                    })
+                })
+            }else if(message.EventKey === 'movie_cartoon' ){
+                let cat = yield Movie.findMoviesByCat('动画')
+                cat.movies.forEach( function(movie) {
+                    news.push({
+                        title:movie.title,
+                        description:movie.description,
+                        picUrl:movie.poster,
+                        url:'http://ltbho8ed41.proxy.qqbrowser.cc/wechat/movie/'+movie._id
+                    })
+                })
+            }else if(message.EventKey === 'help' ){
+                news = help
+            }
+            this.body = news;
         }else if(message.Event === 'SCAN'){
             console.log('关注后扫二维码：'+message.EventKey+' '+message.Ticket);
             this.body = '看到你扫了一下哦';

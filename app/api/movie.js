@@ -28,7 +28,7 @@ exports.searchByCategory = function *(catId) {
         .find({_id:catId})
         .populate({
             path: 'movies',
-            select: 'title poster',
+            select: 'title poster'
         })
         .exec()
     return categories
@@ -139,4 +139,28 @@ exports.searchByDouban = function *(q){
 
 
     return movies
+}
+
+exports.findHotMovies = function *(hot,count){
+    var movies = yield Movie
+        .find().sort({"pv":hot}).limit(count)
+        .exec()
+    return movies
+}
+exports.searchByName = function *(q) {
+    var movies = yield Movie
+        .find({title:new RegExp(q+'.*','i')})
+        .exec()
+    return movies
+}
+
+exports.findMoviesByCat = function *(cat) {
+    var category = yield Category
+        .findOne({name:cat})
+        .populate({
+            path:'movies',
+            select:'title poster _id'
+        })
+        .exec()
+    return category
 }

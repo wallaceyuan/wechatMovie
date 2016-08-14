@@ -4,6 +4,8 @@
 
 'use strict'
 
+
+
 var Index = require('../app/controllers/index')
 var User = require('../app/controllers/user')
 var Movie = require('../app/controllers/movie')
@@ -13,6 +15,7 @@ var Category = require('../app/controllers/category')
 //wechat
 var Game = require('../app/controllers/game')
 var Wechat = require('../app/controllers/wechat')
+var koaBody = require('koa-body')
 
 module.exports = function(router) {
 
@@ -40,13 +43,11 @@ module.exports = function(router) {
 
     // Movie
     router.get('/movie/:id', Movie.detail)
-/*
     router.get('/admin/movie/new', User.signinRequired, User.adminRequired, Movie.new)
     router.get('/admin/movie/update/:id', User.signinRequired, User.adminRequired, Movie.update)
-    router.post('/admin/movie', User.signinRequired, User.adminRequired, Movie.savePoster, Movie.save)
+    router.post('/admin/movie',User.adminRequired, koaBody({multipart:true}), Movie.savePoster,  Movie.save)
     router.get('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.list)
     router.delete('/admin/movie/list', User.signinRequired, User.adminRequired, Movie.del)
-*/
 
 
     //weixin
@@ -56,7 +57,7 @@ module.exports = function(router) {
     router.post('/wx',Wechat.hear)
 
     // Comment
-/*    router.post('/user/comment', User.signinRequired, Comment.save)
+    router.post('/user/comment', User.signinRequired, Comment.save)
 
     // Category
     router.get('/admin/category/new', User.signinRequired, User.adminRequired, Category.new)
@@ -64,5 +65,5 @@ module.exports = function(router) {
     router.get('/admin/category/list', User.signinRequired, User.adminRequired, Category.list)
 
     // results
-    router.get('/results', Index.search)*/
+    router.get('/results', Index.search)
 }

@@ -4,12 +4,16 @@ block content
   .container
     .row
       .col-md-7
-        embed(src="#{movie.flash}", allowFullScreen="true", quality="high", width="720", height="600", align="middle", allowScriptAcess="always", type="application/x-shockwave-flash")
+        if movie.flash
+            embed(src="#{movie.flash}", allowFullScreen="true", quality="high", width="720", height="600", align="middle", allowScriptAcess="always", type="application/x-shockwave-flash")
+        else
+            img(src="#{movie.poster}",width="720")
         .panel.panel-defatul
           .panel-heading
             h3 评论区
           .panel-body
-            ul.media-list
+            if comments && comments.length >0
+                ul.media-list
               each item in comments
                 li.media
                   .pull-left
@@ -36,10 +40,12 @@ block content
                 input(type="hidden", name="comment[movie]", value="#{movie._id}")
                 if user
                   input(type="hidden", name="comment[from]", value="#{user._id}")
+                  input#toId(type="hidden", name="comment[tid]")
+                  input#commentId(type="hidden", name="comment[cid]")
                 .form-group
                   textarea.form-control(name="comment[content]", row="3")
                 if user
-                  button.btn.btn-primary(type='submit') 提交
+                  button#submit.btn.btn-primary(type='submit') 提交
                 else
                   a.navbar-link(href="#", data-toggle="modal", data-target="#signinModal") 登录后评论
       .col-md-5
@@ -56,4 +62,29 @@ block content
           dd= movie.year
           dt 简介
           dd= movie.summary
-  script(src="/build/detail.min.js")
+  script.
+    $(function() {
+        $('.comment').click(function(e) {
+            var target = $(this)
+            var toId = target.data('tid')
+            var commentId = target.data('cid')
+
+            $('#toId').val(toId)
+            $('#commentId').val(commentId)
+        })
+
+        $('#submit').click(function(e) {
+            e.preventDefault()
+
+            $.ajax({
+                type: 'POST',
+                data: $('#commentForm').serialize(),
+                    url: '/user/comment'
+                })
+                .done(function(results) {
+                    if (results.success === 1) {
+                        window.location.reload()
+                }
+            })
+        })
+    })

@@ -74,7 +74,6 @@ exports.logout =  function *(next) {
 
 // userlist page
 exports.list = function *(next) {
-
   var users = yield  User.find({}).sort('meta.updateAt').exec()
   yield this.render('pages/userlist', {
     title: 'imooc 用户列表页',
@@ -85,7 +84,6 @@ exports.list = function *(next) {
 // midware for user
 exports.signinRequired = function *(next) {
   var user = this.session.user
-
   if (!user) {
     this.redirect('/signin')
   }else{
@@ -95,7 +93,6 @@ exports.signinRequired = function *(next) {
 
 exports.adminRequired = function *(next) {
   var user = this.session.user
-
   if (user.role <= 10) {
     this.redirect('/signin')
   }else{

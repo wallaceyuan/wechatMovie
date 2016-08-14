@@ -17,7 +17,7 @@ exports.detail = function *(next) {
   yield Movie.update({_id: id}, {$inc: {pv: 1}}).exec()
 
   var movie = yield Movie.findOne({_id: id}).exec()
-  console.log(movie);
+  //console.log(movie);
   var comments = yield Comment
       .find({movie: id})
       .populate('from', 'name')
@@ -44,7 +44,7 @@ exports.new = function *(next) {
 
 // admin update page
 exports.update = function *(next) {
-  var id = this.request.params.id
+  var id = this.params.id
 
   if (id) {
     var movie = yield Movie.findOne({_id: id}).exec()
@@ -58,77 +58,73 @@ exports.update = function *(next) {
   }
 }
 
-// admin poster
-/*
-exports.savePoster = function *(next) {
-  var posterData = this.request.files.uploadPoster
-  var filePath = posterData.path
-  var originalFilename = posterData.originalFilename
+var util = require('../../libs/util')
 
-  if (originalFilename) {
-    var data = yield fs.readFile(filePath)
+// admin poster
+exports.savePoster = function *(next) {
+  var posterData = this.request.body.files.uploadPoster
+  var filePath = posterData.path
+  var name = posterData.name
+  if (name) {
+    var data = yield util.readFileAsync(filePath)
     var timestamp = Date.now()
     var type = posterData.type.split('/')[1]
     var poster = timestamp + '.' + type
     var newPath = path.join(__dirname, '../../', '/public/upload/' + poster)
-    yield fs.writeFile(newPath, data)
-
-    this.request.poster = poster
-    yield next
+    yield util.writeFileAsync(newPath,data)
+    this.poster = poster
   }
-  else {
     yield next
-  }
 }
-*/
 
 // admin post movie
 exports.save = function *(next) {
-  var id = this.request.body.movie._id
-  var movieObj = this.request.body.movie
-  var _movie
+    console.log('save');
+    var movieObj = this.request.body.fields || {}
+    var _movie
 
-  if (this.request.poster) {
-    movieObj.poster = this.request.poster
-  }
-
-  if (id) {
-    var movie = yield Movie.findOne({_id: id}).exec()
-    _movie = _.extend(movie, movieObj)
-    yield _movie.save()
-    this.redirect('/movie/' + movie._id)
-  }
-  else {
-    _movie = new Movie(movieObj)
-
-    var categoryId = movieObj.category
-    var categoryName = movieObj.categoryName
-
-    var movie = yield  _movie.save()
-
-    if (categoryId) {
-
-      var category = yield Category.findOne({_id: categoryId}).exec()
-
-      category.movies.push(movie._id)
-
-      yield category.save()
-      this.redirect('/movie/' + movie._id)
-      yield next
+    if (this.poster) {
+        movieObj.poster = this.poster
     }
-    else if (categoryName) {
-      var category = yield new Category({
-        name: categoryName,
-        movies: [movie._id]
-      })
-      yield category.save()
-      movie.category = category._id
-      yield movie.save()
-      this.redirect('/movie/' + movie._id)
+
+    if (movieObj._id) {
+        var movie = yield Movie.findOne({_id: movieObj._id}).exec()
+
+        _movie = _.extend(movie, movieObj)
+        yield _movie.save()
+
+        this.redirect('/movie/' + movie._id)
     }
-  }
+    else {
+        _movie = new Movie(movieObj)
+
+        var categoryId = movieObj.category
+        var categoryName = movieObj.categoryName
+
+        var movie = yield _movie.save()
+
+        if (categoryId) {
+            let category = yield Category.findOne({_id: categoryId}).exec()
+
+            category.movies.push(movie._id)
+            yield category.save()
+
+            this.redirect('/movie/' + movie._id)
+        }
+        else if (categoryName) {
+            let category = new Category({
+                name: categoryName,
+                movies: [movie._id]
+            })
+
+            yield category.save()
+            movie.category = category._id
+            yield movie.save()
+
+            this.redirect('/movie/' + movie._id)
+        }
+    }
 }
-
 // list page
 exports.list = function *(next) {
   var movies = yield Movie.find({})
